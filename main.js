@@ -15,15 +15,15 @@ async function fetchData(url){
 }
 
 async function getSeasons(){
-    return fetchData("http://ergast.com/api/f1/seasons.json?offset=44&limit=100");
+    return fetchData("https://ergast.com/api/f1/seasons.json?offset=44&limit=100");
 }
 
 async function getConstructors(year){
-    return fetchData(`http://ergast.com/api/f1/${year}/constructors.json`);
+    return fetchData(`https://ergast.com/api/f1/${year}/constructors.json`);
 }
 
 async function getQualifying(year, constructorId){
-    return fetchData(`http://ergast.com/api/f1/${year}/constructors/${constructorId}/qualifying.json?limit=60`);
+    return fetchData(`https://ergast.com/api/f1/${year}/constructors/${constructorId}/qualifying.json?limit=60`);
 }
 
 // Update constructors list

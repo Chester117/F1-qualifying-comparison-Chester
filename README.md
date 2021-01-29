@@ -6,4 +6,4 @@ https://sheepwizard.github.io/F1-qualifying-comparison/
 
 
 All data is sourced from:
-ergast.com/mrd/
+[ergast.com/mrd/](ergast.com/mrd/)

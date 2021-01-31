@@ -44,7 +44,7 @@ function millisecondsToStruct(time){
     newTime.minutes = Math.floor(time/60000);
     time = time % 60000;
     newTime.seconds = Math.floor(time/1000);
-    newTime.milliseconds = time % 1000;
+    newTime.milliseconds = Math.floor(time % 1000);
     return newTime;
 }
 
@@ -121,17 +121,17 @@ function bestTime(driver) {
     };
     if (driver.ref.Q1) {
         if (driver.ref.Q1 < bestTime) {
-            bestTime.time = driver.ref.Q1
-            bestTime.session = 1
+            bestTime.time = driver.ref.Q1;
+            bestTime.session = 1;
         }
     }
     if (driver.ref.Q2) {
-        bestTime.time  = driver.ref.Q2
-        bestTime.session = 2
+        bestTime.time  = driver.ref.Q2;
+        bestTime.session = 2;
     }
     if (driver.ref.Q3) {
-        bestTime.time = driver.ref.Q3
-        bestTime.session = 3
+        bestTime.time = driver.ref.Q3;
+        bestTime.session = 3;
     }
     return bestTime;
 }
@@ -168,7 +168,7 @@ function displayMeanTime(currentTable){
     // If driver pairing have only 1 race and someone didnt qualify then this might be 0
     if (currentTable.sameRaceCount >= 1){
         const meanTime = millisecondsToStruct(currentTable.cumulativeDifference / currentTable.sameRaceCount);
-        const tdText = `${meanTime.isNegative ? "-" : "+"}${meanTime.minutes}:${meanTime.seconds}.${Math.round(meanTime.milliseconds)}`;
+        const tdText = `${meanTime.isNegative ? "-" : "+"}${meanTime.minutes > 0 ? time.minutes + ":" : ""}${meanTime.seconds}.${meanTime.milliseconds}`;
         let tdColour = "#85FF78"
         if (meanTime.isNegative) {
             tdColour = "#FF7878";
@@ -256,10 +256,10 @@ function createQualifyingTable(results){
 
         tr.appendChild(newTd(`${races[i].round}: ${races[i].raceName}`, false, {textAlign: "left"}));
 
-        const d1BestTime = bestTime(driver1)
+        const d1BestTime = bestTime(driver1);
         tr.appendChild(newTd(`Q${d1BestTime.session} ${d1BestTime.time}`, false));
 
-        const d2BestTime = bestTime(driver2)
+        const d2BestTime = bestTime(driver2);
         tr.appendChild(newTd(`Q${d2BestTime.session} ${d2BestTime.time}`, false));
 
         if (d1BestTime === "N/A" || d2BestTime === "N/A"){
@@ -275,7 +275,7 @@ function createQualifyingTable(results){
             currentTable.cumulativeDifference += timeDifference;
             currentTable.sameRaceCount++;
             const time = millisecondsToStruct(timeDifference);
-            tdText = `${time.isNegative ? "-" : "+"}${time.minutes}:${time.seconds}.${time.milliseconds}`
+            tdText = `${time.isNegative ? "-" : "+"}${time.minutes > 0 ? time.minutes+":" : ""}${time.seconds}.${time.milliseconds}`;
             
             if (time.isNegative) {
                 tdColour = "#FF7878";
@@ -297,8 +297,8 @@ function createQualifyingTable(results){
 
 
     for (let i = 0; i < tableList.length; i++) {
-        displayMeanTime(tableList[i])
-        displayQualyScore(tableList[i])
+        displayMeanTime(tableList[i]);
+        displayQualyScore(tableList[i]);
     }
     
 }

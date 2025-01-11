@@ -71,21 +71,25 @@ function createTable(driver1, driver2) {
     div.style.display = "flex";
     div.style.flexDirection = "column";
     div.style.alignItems = "center";
+    div.style.width = "100%"; // Ensure the container takes full width
+    div.style.margin = "0 auto"; // Center the container
     
     // Add driver names header with same font as page title
     const driverHeader = document.createElement("h1");
     driverHeader.style.fontSize = "2em";
     driverHeader.style.marginBottom = "1em";
     driverHeader.style.textAlign = "center";
-    driverHeader.style.fontFamily = "'__Inter_e66fe9', '__Inter_Fallback_e66fe9'"; // Match page title font
+    driverHeader.style.fontFamily = "'__Inter_e66fe9', '__Inter_Fallback_e66fe9'";
+    driverHeader.style.width = "100%"; // Ensure header takes full width
     driverHeader.textContent = `${driver1.name} vs ${driver2.name}`;
     div.appendChild(driverHeader);
     
     // Create a container div for this specific table
     const tableContainer = document.createElement("div");
-    tableContainer.style.display = "block";
+    tableContainer.style.display = "flex"; // Changed to flex
+    tableContainer.style.justifyContent = "center"; // Center the table horizontally
     tableContainer.style.marginBottom = "2em";
-    tableContainer.style.width = "fit-content";
+    tableContainer.style.width = "100%"; // Full width container
     
     const table = document.createElement("table");
     table.style.borderCollapse = "collapse";
@@ -101,14 +105,11 @@ function createTable(driver1, driver2) {
         { text: "Round", width: "50px" },
         { text: "Race", width: "200px" },
         { text: "Session", width: "60px" },
-        { text: driver1.name, width: "140px" }, // Increased from 110px
-        { text: driver2.name, width: "140px" }, // Increased from 110px
+        { text: driver1.name, width: "140px" },
+        { text: driver2.name, width: "140px" },
         { text: "Time Delta", width: "100px" },
         { text: "Delta %", width: "90px" }
     ];
-
-    const totalWidth = headers.reduce((sum, header) => sum + parseInt(header.width), 0);
-    tableContainer.style.width = `${totalWidth}px`;
 
     headers.forEach((header, index) => {
         let th = document.createElement("th");

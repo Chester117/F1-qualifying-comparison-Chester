@@ -244,7 +244,6 @@ function calculateMedian(numbers) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function displayMedianResults(currentTable) {
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
@@ -312,17 +311,17 @@ function displayMedianResults(currentTable) {
         labelCell.style.padding = "12px 6px";
         labelCell.style.fontWeight = "bold";
         labelCell.style.textAlign = "left";
-        labelCell.colSpan = 3; // Span first three columns
+        labelCell.colSpan = 2;
         if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
         labelCell.textContent = data.label;
         tr.appendChild(labelCell);
         
-        // Value cell
+        // Value cell - Updated to center alignment
         const valueCell = document.createElement("td");
         valueCell.style.padding = "12px 6px";
         valueCell.style.fontWeight = "bold";
-        valueCell.style.textAlign = "left";
-        valueCell.colSpan = 4; // Span remaining columns
+        valueCell.style.textAlign = "center"; // Changed from left to center
+        valueCell.colSpan = 5;
         if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
         
         const result = data.getValue();
@@ -339,22 +338,22 @@ function displayMedianResults(currentTable) {
     labelCell.style.padding = "12px 6px";
     labelCell.style.fontWeight = "bold";
     labelCell.style.textAlign = "left";
-    labelCell.colSpan = 3;
+    labelCell.colSpan = 2;
     labelCell.textContent = "Qualifying score";
     qualyScoreTr.appendChild(labelCell);
 
-    // Score cell
+    // Score cell - Updated to center alignment
     const scoreCell = document.createElement("td");
     scoreCell.style.padding = "12px 6px";
-    scoreCell.style.textAlign = "left";
+    scoreCell.style.textAlign = "center"; // Changed from left to center
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
-    scoreCell.colSpan = 4;
+    scoreCell.colSpan = 5;
 
     // Get driver names from the table headers
     const headers = currentTable.table.getElementsByTagName('th');
-    const driver1Name = headers[3].textContent;
-    const driver2Name = headers[4].textContent;
+    const driver1Name = headers[2].textContent;
+    const driver2Name = headers[3].textContent;
     
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
@@ -364,7 +363,6 @@ function displayMedianResults(currentTable) {
 
     qualyScoreTr.appendChild(scoreCell);
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////  END END END  ///////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

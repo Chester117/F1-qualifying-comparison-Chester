@@ -487,7 +487,7 @@ function createQualifyingTable(results) {
 
             cells.push(
                 { 
-                    text: `${time.isNegative ? "-" : "+"}${time.minutes > 0 ? time.minutes+":" : ""}${time.seconds}.${time.milliseconds}`,
+                    text: `${time.isNegative ? "-" : "+"}${time.minutes > 0 ? time.minutes+":" : ""}${time.seconds}.${time.milliseconds.toString().padStart(3, '0')}`,
                     align: "center",
                     backgroundColor: tdColor
                 },

@@ -283,11 +283,11 @@ function displayMedianResults(currentTable) {
         labelCell.textContent = data.label;
         tr.appendChild(labelCell);
         
-        // Value cell - Updated to center alignment
+        // Value cell
         const valueCell = document.createElement("td");
         valueCell.style.padding = "12px 6px";
         valueCell.style.fontWeight = "bold";
-        valueCell.style.textAlign = "center"; // Changed from left to center
+        valueCell.style.textAlign = "center";
         valueCell.colSpan = 5;
         if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
         
@@ -309,10 +309,10 @@ function displayMedianResults(currentTable) {
     labelCell.textContent = "Qualifying score";
     qualyScoreTr.appendChild(labelCell);
 
-    // Score cell - Updated to center alignment
+    // Score cell
     const scoreCell = document.createElement("td");
     scoreCell.style.padding = "12px 6px";
-    scoreCell.style.textAlign = "center"; // Changed from left to center
+    scoreCell.style.textAlign = "center";
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
     scoreCell.colSpan = 5;
@@ -325,6 +325,7 @@ function displayMedianResults(currentTable) {
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
     
+    // Keep the order matching the column headers where driver1 is first
     const scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
     scoreCell.textContent = scoreText;
 

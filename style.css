@@ -23,9 +23,9 @@ body{
 }
 
 .flex-title{
-    font-family: monospace;
+    font-family: 'Noto Sans SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
     font-size: 50px;
-    color: #F20002;
+    color: black;
 }
 
 .selector{

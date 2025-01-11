@@ -71,21 +71,25 @@ function createTable(driver1, driver2) {
     div.style.display = "flex";
     div.style.flexDirection = "column";
     div.style.alignItems = "center";
-    div.style.width = "100%";
-    div.style.margin = "0 auto";
+    div.style.width = "100%"; // Ensure the container takes full width
+    div.style.margin = "0 auto"; // Center the container
     
-    // Add driver names header using CSS class
+    // Add driver names header with Source Han Sans SC font
     const driverHeader = document.createElement("h1");
-    driverHeader.className = "driver-comparison-header";
+    driverHeader.style.fontSize = "2em";
+    driverHeader.style.marginBottom = "1em";
+    driverHeader.style.textAlign = "center";
+    driverHeader.style.fontFamily = "'Source Han Sans SC', sans-serif"; // Changed to Source Han Sans SC
+    driverHeader.style.width = "100%"; // Ensure header takes full width
     driverHeader.textContent = `${driver1.name} vs ${driver2.name}`;
     div.appendChild(driverHeader);
     
     // Create a container div for this specific table
     const tableContainer = document.createElement("div");
-    tableContainer.style.display = "flex";
-    tableContainer.style.justifyContent = "center";
+    tableContainer.style.display = "flex"; // Changed to flex
+    tableContainer.style.justifyContent = "center"; // Center the table horizontally
     tableContainer.style.marginBottom = "2em";
-    tableContainer.style.width = "100%";
+    tableContainer.style.width = "100%"; // Full width container
     
     const table = document.createElement("table");
     table.style.borderCollapse = "collapse";
@@ -101,7 +105,36 @@ function createTable(driver1, driver2) {
         { text: "Round", width: "50px" },
         { text: "Race", width: "200px" },
         { text: driver1.name, width: "140px" },
-   
+        { text: driver2.name, width: "140px" },
+        { text: "Time Delta", width: "100px" },
+        { text: "Delta %", width: "90px" },
+        { text: "Session", width: "60px" }
+    ];
+
+    headers.forEach((header, index) => {
+        let th = document.createElement("th");
+        th.appendChild(document.createTextNode(header.text));
+        th.className = `row-${index + 1}`;
+        th.style.padding = "6px";
+        th.style.textAlign = index === 1 ? "left" : "center";
+        th.style.width = header.width;
+        th.style.whiteSpace = "nowrap";
+        tr.appendChild(th);
+    });
+
+    tableContainer.appendChild(table);
+    div.appendChild(tableContainer);
+    
+    return {
+        table: table,
+        id: `${driver1.id}${driver2.id}`,
+        sameRaceCount: 0,
+        raceCount: 0,
+        timeDifferences: [],
+        percentageDifferences: [],
+        driver1Better: 0,
+    };
+}
 
 //end of creat table
 function newDriver(d) {
@@ -283,11 +316,11 @@ function displayMedianResults(currentTable) {
         labelCell.textContent = data.label;
         tr.appendChild(labelCell);
         
-        // Value cell
+        // Value cell - Updated to center alignment
         const valueCell = document.createElement("td");
         valueCell.style.padding = "12px 6px";
         valueCell.style.fontWeight = "bold";
-        valueCell.style.textAlign = "center";
+        valueCell.style.textAlign = "center"; // Changed from left to center
         valueCell.colSpan = 5;
         if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
         
@@ -309,10 +342,10 @@ function displayMedianResults(currentTable) {
     labelCell.textContent = "Qualifying score";
     qualyScoreTr.appendChild(labelCell);
 
-    // Score cell
+    // Score cell - Updated to center alignment
     const scoreCell = document.createElement("td");
     scoreCell.style.padding = "12px 6px";
-    scoreCell.style.textAlign = "center";
+    scoreCell.style.textAlign = "center"; // Changed from left to center
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
     scoreCell.colSpan = 5;
@@ -325,7 +358,6 @@ function displayMedianResults(currentTable) {
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
     
-    // Keep the order matching the column headers where driver1 is first
     const scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
     scoreCell.textContent = scoreText;
 
@@ -523,6 +555,5 @@ async function main(){
 window.addEventListener("load", () =>{
     main();
 });
-
 
 

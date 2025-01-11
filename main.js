@@ -390,7 +390,7 @@ function displayMedianResults(currentTable) {
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
     
-    const scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
+    const scoreText = `${driver2Name} ${driver1Score} - ${driver2Score} ${driver1Name}`;
     scoreCell.textContent = scoreText;
 
     qualyScoreTr.appendChild(scoreCell);

@@ -68,6 +68,13 @@ function convertTimeString(time){
 
 function createTable(driver1, driver2) {
     const div = document.getElementById("tables");
+    
+    // Create a container div for this specific table
+    const tableContainer = document.createElement("div");
+    tableContainer.style.display = "block"; // Force block layout
+    tableContainer.style.marginBottom = "2em";
+    tableContainer.style.width = "fit-content";
+    
     const table = document.createElement("table");
     table.style.borderCollapse = "collapse";
     table.style.width = "fit-content";
@@ -88,6 +95,10 @@ function createTable(driver1, driver2) {
         { text: "Delta %", width: "80px" }
     ];
 
+    // Calculate total width for table
+    const totalWidth = headers.reduce((sum, header) => sum + parseInt(header.width), 0);
+    tableContainer.style.width = `${totalWidth}px`; // Set container width to match table
+
     headers.forEach((header, index) => {
         let th = document.createElement("th");
         th.appendChild(document.createTextNode(header.text));
@@ -95,10 +106,13 @@ function createTable(driver1, driver2) {
         th.style.padding = "4px";
         th.style.textAlign = index === 1 ? "left" : "center";
         th.style.width = header.width;
+        th.style.whiteSpace = "nowrap"; // Prevent header text wrapping
         tr.appendChild(th);
     });
 
-    div.appendChild(table);
+    tableContainer.appendChild(table);
+    div.appendChild(tableContainer);
+    
     return {
         table: table,
         id: `${driver1.id}${driver2.id}`,
@@ -277,23 +291,33 @@ function displayMedianResults(currentTable) {
         const tr = document.createElement("tr");
         currentTable.table.appendChild(tr);
 
-        // First cell with label
+        // First cell with label (Round column)
         const labelCell = document.createElement("td");
         labelCell.style.textAlign = "left";
         labelCell.style.padding = "4px";
         labelCell.style.fontWeight = "bold";
+        labelCell.style.width = "40px"; // Match Round column width
         if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
-        labelCell.textContent = data.label;
+        labelCell.textContent = "";
         tr.appendChild(labelCell);
 
-        // Empty cells for Race and Session
-        for (let i = 0; i < 2; i++) {
-            const emptyCell = document.createElement("td");
-            if (index === 0) emptyCell.style.borderTop = "4px solid #ddd";
-            tr.appendChild(emptyCell);
-        }
+        // Race name column - contains the label
+        const raceLabelCell = document.createElement("td");
+        raceLabelCell.style.textAlign = "left";
+        raceLabelCell.style.padding = "4px";
+        raceLabelCell.style.fontWeight = "bold";
+        raceLabelCell.style.width = "180px"; // Match Race column width
+        if (index === 0) raceLabelCell.style.borderTop = "4px solid #ddd";
+        raceLabelCell.textContent = data.label;
+        tr.appendChild(raceLabelCell);
 
-        // Value cell
+        // Session column (empty)
+        const sessionCell = document.createElement("td");
+        if (index === 0) sessionCell.style.borderTop = "4px solid #ddd";
+        sessionCell.style.width = "50px"; // Match Session column width
+        tr.appendChild(sessionCell);
+
+        // Value cell spanning remaining columns
         const result = data.getValue();
         const valueCell = document.createElement("td");
         valueCell.style.padding = "4px";
@@ -312,22 +336,30 @@ function displayMedianResults(currentTable) {
         tr.appendChild(valueCell);
     });
 
-    // Add qualifying score
+    // Add qualifying score with same cell structure
     const qualyScoreTr = document.createElement("tr");
     currentTable.table.appendChild(qualyScoreTr);
 
+    // Round column (empty)
+    const roundCell = document.createElement("td");
+    roundCell.style.width = "40px";
+    qualyScoreTr.appendChild(roundCell);
+
+    // Race column with label
     const labelCell = document.createElement("td");
     labelCell.style.textAlign = "left";
     labelCell.style.padding = "4px";
     labelCell.style.fontWeight = "bold";
+    labelCell.style.width = "180px";
     labelCell.textContent = "Qualifying score";
     qualyScoreTr.appendChild(labelCell);
 
-    // Empty cells for Race and Session
-    for (let i = 0; i < 2; i++) {
-        qualyScoreTr.appendChild(document.createElement("td"));
-    }
+    // Session column (empty)
+    const sessionCell = document.createElement("td");
+    sessionCell.style.width = "50px";
+    qualyScoreTr.appendChild(sessionCell);
 
+    // Score cell
     const scoreCell = document.createElement("td");
     scoreCell.style.padding = "4px";
     scoreCell.style.textAlign = "center";
@@ -343,6 +375,7 @@ function displayMedianResults(currentTable) {
 
     qualyScoreTr.appendChild(scoreCell);
 }
+
 // Create all qualifying tables
 
 function createQualifyingTable(results) {

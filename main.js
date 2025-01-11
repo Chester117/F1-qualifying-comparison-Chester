@@ -78,13 +78,13 @@ function createTable(driver1, driver2) {
 
     // Add headers with specific widths and styles
     const headers = [
-        { text: "Round", width: "7%" },
-        { text: "Race", width: "25%" },
-        { text: "Session", width: "8%" },
-        { text: driver1.name, width: "15%" },
-        { text: driver2.name, width: "15%" },
-        { text: "Time Delta", width: "15%" },
-        { text: "Delta %", width: "15%" }
+        { text: "Round", width: "5%" },
+        { text: "Race", width: "20%" },
+        { text: "Session", width: "6%" },
+        { text: driver1.name, width: "12%" },
+        { text: driver2.name, width: "12%" },
+        { text: "Time Delta", width: "12%" },
+        { text: "Delta %", width: "10%" }
     ];
 
     headers.forEach((header, index) => {
@@ -209,8 +209,10 @@ function calculateMedian(numbers) {
 
     return sorted[middle];
 }
-
 function displayMedianResults(currentTable) {
+    // Calculate averages
+    const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+    
     const summaryData = [
         {
             label: "Median time difference",
@@ -230,9 +232,37 @@ function displayMedianResults(currentTable) {
             getValue: () => {
                 if (currentTable.percentageDifferences.length >= 1) {
                     const medianPercentage = calculateMedian(currentTable.percentageDifferences);
+                    const formattedPercentage = Number(Math.abs(medianPercentage)).toPrecision(3);
                     return {
-                        text: `${medianPercentage > 0 ? "+" : ""}${medianPercentage.toFixed(3)}%`,
+                        text: `${medianPercentage > 0 ? "+" : "-"}${formattedPercentage}%`,
                         color: medianPercentage > 0 ? "#85FF78" : "#FF7878"
+                    };
+                }
+                return null;
+            }
+        },
+        {
+            label: "Average time difference",
+            getValue: () => {
+                if (currentTable.timeDifferences.length >= 1) {
+                    const avgTime = millisecondsToStruct(calculateAverage(currentTable.timeDifferences));
+                    return {
+                        text: `${avgTime.isNegative ? "-" : "+"}${avgTime.minutes > 0 ? avgTime.minutes + ":" : ""}${avgTime.seconds}.${avgTime.milliseconds}`,
+                        color: avgTime.isNegative ? "#FF7878" : "#85FF78"
+                    };
+                }
+                return null;
+            }
+        },
+        {
+            label: "Average percentage difference",
+            getValue: () => {
+                if (currentTable.percentageDifferences.length >= 1) {
+                    const avgPercentage = calculateAverage(currentTable.percentageDifferences);
+                    const formattedPercentage = Number(Math.abs(avgPercentage)).toPrecision(3);
+                    return {
+                        text: `${avgPercentage > 0 ? "+" : "-"}${formattedPercentage}%`,
+                        color: avgPercentage > 0 ? "#85FF78" : "#FF7878"
                     };
                 }
                 return null;
@@ -279,9 +309,37 @@ function displayMedianResults(currentTable) {
         tr.appendChild(valueCell);
     });
 
-    displayQualyScore(currentTable);
-}
+    // Add qualifying score
+    const qualyScoreTr = document.createElement("tr");
+    currentTable.table.appendChild(qualyScoreTr);
 
+    const labelCell = document.createElement("td");
+    labelCell.style.textAlign = "left";
+    labelCell.style.padding = "8px";
+    labelCell.style.fontWeight = "bold";
+    labelCell.textContent = "Qualifying score";
+    qualyScoreTr.appendChild(labelCell);
+
+    // Empty cells for Race and Session
+    for (let i = 0; i < 2; i++) {
+        qualyScoreTr.appendChild(document.createElement("td"));
+    }
+
+    const scoreCell = document.createElement("td");
+    scoreCell.style.padding = "8px";
+    scoreCell.style.textAlign = "center";
+    scoreCell.style.fontSize = "1.1em";
+    scoreCell.style.fontWeight = "bold";
+    scoreCell.colSpan = 4;
+
+    const scoreText = `${currentTable.driver1Better} - ${currentTable.raceCount - currentTable.driver1Better}`;
+    const scoreBetter = currentTable.driver1Better > (currentTable.raceCount - currentTable.driver1Better);
+    const scoreEqual = currentTable.driver1Better === (currentTable.raceCount - currentTable.driver1Better);
+    scoreCell.style.backgroundColor = scoreBetter ? "#85FF78" : (scoreEqual ? "#ffc478" : "#FF7878");
+    scoreCell.textContent = scoreText;
+
+    qualyScoreTr.appendChild(scoreCell);
+}
 
 // Create all qualifying tables
 

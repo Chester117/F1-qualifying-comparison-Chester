@@ -65,13 +65,15 @@ function convertTimeString(time){
         return milliseconds
     }
 }
-
 function createTable(driver1, driver2) {
     const div = document.getElementById("tables");
+    div.style.display = "flex";
+    div.style.flexDirection = "column"; // Force vertical stacking
+    div.style.alignItems = "flex-start"; // Align tables to the left
     
     // Create a container div for this specific table
     const tableContainer = document.createElement("div");
-    tableContainer.style.display = "block"; // Force block layout
+    tableContainer.style.display = "block";
     tableContainer.style.marginBottom = "2em";
     tableContainer.style.width = "fit-content";
     
@@ -79,34 +81,33 @@ function createTable(driver1, driver2) {
     table.style.borderCollapse = "collapse";
     table.style.width = "fit-content";
     table.style.marginBottom = "1em";
-    table.style.backgroundColor = "#f5f5f5";  // Light grey background
+    table.style.backgroundColor = "#f5f5f5";
     
     const tr = document.createElement("tr");
     table.appendChild(tr);
 
-    // Add headers with specific widths and styles
+    // Add headers with increased widths
     const headers = [
-        { text: "Round", width: "40px" },
-        { text: "Race", width: "180px" },
-        { text: "Session", width: "50px" },
-        { text: driver1.name, width: "100px" },
-        { text: driver2.name, width: "100px" },
-        { text: "Time Delta", width: "90px" },
-        { text: "Delta %", width: "80px" }
+        { text: "Round", width: "50px" },
+        { text: "Race", width: "200px" },
+        { text: "Session", width: "60px" },
+        { text: driver1.name, width: "110px" },
+        { text: driver2.name, width: "110px" },
+        { text: "Time Delta", width: "100px" },
+        { text: "Delta %", width: "90px" }
     ];
 
-    // Calculate total width for table
     const totalWidth = headers.reduce((sum, header) => sum + parseInt(header.width), 0);
-    tableContainer.style.width = `${totalWidth}px`; // Set container width to match table
+    tableContainer.style.width = `${totalWidth}px`;
 
     headers.forEach((header, index) => {
         let th = document.createElement("th");
         th.appendChild(document.createTextNode(header.text));
         th.className = `row-${index + 1}`;
-        th.style.padding = "4px";
+        th.style.padding = "6px"; // Increased padding
         th.style.textAlign = index === 1 ? "left" : "center";
         th.style.width = header.width;
-        th.style.whiteSpace = "nowrap"; // Prevent header text wrapping
+        th.style.whiteSpace = "nowrap";
         tr.appendChild(th);
     });
 
@@ -225,7 +226,6 @@ function calculateMedian(numbers) {
 }
 
 function displayMedianResults(currentTable) {
-    // Calculate averages
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
     const summaryData = [
@@ -294,9 +294,9 @@ function displayMedianResults(currentTable) {
         // First cell with label (Round column)
         const labelCell = document.createElement("td");
         labelCell.style.textAlign = "left";
-        labelCell.style.padding = "4px";
+        labelCell.style.padding = "6px";
         labelCell.style.fontWeight = "bold";
-        labelCell.style.width = "40px"; // Match Round column width
+        labelCell.style.width = "50px";
         if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
         labelCell.textContent = "";
         tr.appendChild(labelCell);
@@ -304,9 +304,9 @@ function displayMedianResults(currentTable) {
         // Race name column - contains the label
         const raceLabelCell = document.createElement("td");
         raceLabelCell.style.textAlign = "left";
-        raceLabelCell.style.padding = "4px";
+        raceLabelCell.style.padding = "6px";
         raceLabelCell.style.fontWeight = "bold";
-        raceLabelCell.style.width = "180px"; // Match Race column width
+        raceLabelCell.style.width = "200px";
         if (index === 0) raceLabelCell.style.borderTop = "4px solid #ddd";
         raceLabelCell.textContent = data.label;
         tr.appendChild(raceLabelCell);
@@ -314,13 +314,13 @@ function displayMedianResults(currentTable) {
         // Session column (empty)
         const sessionCell = document.createElement("td");
         if (index === 0) sessionCell.style.borderTop = "4px solid #ddd";
-        sessionCell.style.width = "50px"; // Match Session column width
+        sessionCell.style.width = "60px";
         tr.appendChild(sessionCell);
 
         // Value cell spanning remaining columns
         const result = data.getValue();
         const valueCell = document.createElement("td");
-        valueCell.style.padding = "4px";
+        valueCell.style.padding = "6px";
         valueCell.style.textAlign = "center";
         valueCell.colSpan = 4;
         if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
@@ -336,32 +336,32 @@ function displayMedianResults(currentTable) {
         tr.appendChild(valueCell);
     });
 
-    // Add qualifying score with same cell structure
+    // Add qualifying score
     const qualyScoreTr = document.createElement("tr");
     currentTable.table.appendChild(qualyScoreTr);
 
     // Round column (empty)
     const roundCell = document.createElement("td");
-    roundCell.style.width = "40px";
+    roundCell.style.width = "50px";
     qualyScoreTr.appendChild(roundCell);
 
     // Race column with label
     const labelCell = document.createElement("td");
     labelCell.style.textAlign = "left";
-    labelCell.style.padding = "4px";
+    labelCell.style.padding = "6px";
     labelCell.style.fontWeight = "bold";
-    labelCell.style.width = "180px";
+    labelCell.style.width = "200px";
     labelCell.textContent = "Qualifying score";
     qualyScoreTr.appendChild(labelCell);
 
     // Session column (empty)
     const sessionCell = document.createElement("td");
-    sessionCell.style.width = "50px";
+    sessionCell.style.width = "60px";
     qualyScoreTr.appendChild(sessionCell);
 
     // Score cell
     const scoreCell = document.createElement("td");
-    scoreCell.style.padding = "4px";
+    scoreCell.style.padding = "6px";
     scoreCell.style.textAlign = "center";
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";

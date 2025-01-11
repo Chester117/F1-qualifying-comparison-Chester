@@ -55,16 +55,17 @@ function convertTimeString(time){
     if(tkns.length === 2){
         milliseconds += (parseInt(tkns[0]) * 60000);
         const tkns2 = tkns[1].split(".");
-        milliseconds += parseInt(tkns2[0] * 1000);
+        milliseconds += parseInt(tkns2[0]) * 1000;
         milliseconds += parseInt(tkns2[1]);
         return milliseconds
     }else{
         const tkns2 = tkns[0].split(".");
-        milliseconds += parseInt(tkns2[0] * 1000);
+        milliseconds += parseInt(tkns2[0]) * 1000;
         milliseconds += parseInt(tkns2[1]);
         return milliseconds
     }
 }
+
 function createTable(driver1, driver2) {
     const div = document.getElementById("tables");
     div.style.display = "flex";

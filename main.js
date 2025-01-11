@@ -67,32 +67,28 @@ function convertTimeString(time){
 }
 
 function createTable(driver1, driver2) {
-
     const div = document.getElementById("tables");
-
     const table = document.createElement("table");
     const tr = document.createElement("tr");
     table.appendChild(tr);
 
-    let th1 = document.createElement("th");
-    th1.appendChild(document.createTextNode("Race"));
-    th1.className = "row-1";
-    tr.appendChild(th1);
+    // Add headers
+    const headers = [
+        "Round",
+        "Race",
+        "Session Used",
+        driver1.name,
+        driver2.name,
+        "Time Delta",
+        "Delta %",
+    ];
 
-    th1 = document.createElement("th");
-    th1.appendChild(document.createTextNode(driver1.name));
-    th1.className = "row-2";
-    tr.appendChild(th1);
-
-    th1 = document.createElement("th");
-    th1.appendChild(document.createTextNode(driver2.name));
-    th1.className = "row-4";
-    tr.appendChild(th1);
-
-    th1 = document.createElement("th");
-    th1.appendChild(document.createTextNode("Difference"));
-    th1.className = "row-4";
-    tr.appendChild(th1);
+    headers.forEach((header, index) => {
+        let th = document.createElement("th");
+        th.appendChild(document.createTextNode(header));
+        th.className = `row-${index + 1}`;
+        tr.appendChild(th);
+    });
 
     div.appendChild(table);
     return {
@@ -100,11 +96,12 @@ function createTable(driver1, driver2) {
         id: `${driver1.id}${driver2.id}`,
         sameRaceCount: 0,
         raceCount: 0,
-        cumulativeDifference: 0,
+        timeDifferences: [], // Store all time differences for median calculation
+        percentageDifferences: [], // Store all percentage differences for median calculation
         driver1Better: 0,
     };
-
 }
+
 
 function newDriver(d) {
     return {
@@ -115,25 +112,13 @@ function newDriver(d) {
 }
 
 function bestTime(driver) {
-    let bestTime = {
-        time: "N/A",
-        session: "1",
+    let times = {
+        Q1: driver.ref.Q1 || null,
+        Q2: driver.ref.Q2 || null,
+        Q3: driver.ref.Q3 || null
     };
-    if (driver.ref.Q1) {
-        if (driver.ref.Q1 < bestTime) {
-            bestTime.time = driver.ref.Q1;
-            bestTime.session = 1;
-        }
-    }
-    if (driver.ref.Q2) {
-        bestTime.time  = driver.ref.Q2;
-        bestTime.session = 2;
-    }
-    if (driver.ref.Q3) {
-        bestTime.time = driver.ref.Q3;
-        bestTime.session = 3;
-    }
-    return bestTime;
+    
+    return times;
 }
 
 function newTd(text, bold, styleOptions){
@@ -156,26 +141,6 @@ function newTd(text, bold, styleOptions){
     return td;
 }
 
-function displayMeanTime(currentTable){
-    const tr = document.createElement("tr");
-    currentTable.table.appendChild(tr);
-
-    tr.appendChild(newTd("Mean difference when in same session", true, { textAlign: "left", borderTop: "4px solid #586eff"})); 
-
-    tr.appendChild(newTd("", false, { borderTop: "4px solid #586eff" }));
-    tr.appendChild(newTd("", false, { borderTop: "4px solid #586eff" }));
-
-    // If driver pairing have only 1 race and someone didnt qualify then this might be 0
-    if (currentTable.sameRaceCount >= 1){
-        const meanTime = millisecondsToStruct(currentTable.cumulativeDifference / currentTable.sameRaceCount);
-        const tdText = `${meanTime.isNegative ? "-" : "+"}${meanTime.minutes > 0 ? time.minutes + ":" : ""}${meanTime.seconds}.${meanTime.milliseconds}`;
-        let tdColour = "#85FF78"
-        if (meanTime.isNegative) {
-            tdColour = "#FF7878";
-        }
-        tr.appendChild(newTd(tdText, true, { backgroundColor: tdColour, borderTop: "4px solid #586eff" }));
-    }   
-}
 
 function displayQualyScore(currentTable){
     const tr = document.createElement("tr");
@@ -198,28 +163,117 @@ function displayQualyScore(currentTable){
     tr.appendChild(newTd(tdText, true, { backgroundColor: tdColour}));
 }
 
+function compareDriverTimes(driver1Times, driver2Times) {
+    // Find the latest session where both drivers set a time
+    let sessionUsed = null;
+    let d1Time = null;
+    let d2Time = null;
+
+    if (driver1Times.Q3 && driver2Times.Q3) {
+        sessionUsed = "Q3";
+        d1Time = driver1Times.Q3;
+        d2Time = driver2Times.Q3;
+    } else if (driver1Times.Q2 && driver2Times.Q2) {
+        sessionUsed = "Q2";
+        d1Time = driver1Times.Q2;
+        d2Time = driver2Times.Q2;
+    } else if (driver1Times.Q1 && driver2Times.Q1) {
+        sessionUsed = "Q1";
+        d1Time = driver1Times.Q1;
+        d2Time = driver2Times.Q1;
+    }
+
+    return {
+        sessionUsed,
+        d1Time,
+        d2Time
+    };
+}
+
+function calculateMedian(numbers) {
+    if (numbers.length === 0) return 0;
+    
+    const sorted = numbers.sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+
+    if (sorted.length % 2 === 0) {
+        return (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    return sorted[middle];
+}
+
+function displayMedianResults(currentTable) {
+    // Display median time difference
+    const tr1 = document.createElement("tr");
+    currentTable.table.appendChild(tr1);
+
+    tr1.appendChild(newTd("Median time difference", true, { 
+        textAlign: "left", 
+        borderTop: "4px solid #586eff"
+    }));
+
+    // Add empty cells for Round, Race, Session Used columns
+    for (let i = 0; i < 2; i++) {
+        tr1.appendChild(newTd("", false, { 
+            borderTop: "4px solid #586eff" 
+        }));
+    }
+
+    if (currentTable.timeDifferences.length >= 1) {
+        const medianTime = millisecondsToStruct(calculateMedian(currentTable.timeDifferences));
+        const tdText = `${medianTime.isNegative ? "-" : "+"}${medianTime.minutes > 0 ? medianTime.minutes + ":" : ""}${medianTime.seconds}.${medianTime.milliseconds}`;
+        let tdColour = medianTime.isNegative ? "#FF7878" : "#85FF78";
+        
+        tr1.appendChild(newTd(tdText, true, { 
+            backgroundColor: tdColour, 
+            borderTop: "4px solid #586eff",
+            colSpan: 4
+        }));
+    }
+
+    // Display median percentage difference
+    const tr2 = document.createElement("tr");
+    currentTable.table.appendChild(tr2);
+
+    tr2.appendChild(newTd("Median percentage difference", true, { 
+        textAlign: "left"
+    }));
+
+    // Add empty cells for Round, Race, Session Used columns
+    for (let i = 0; i < 2; i++) {
+        tr2.appendChild(newTd("", false));
+    }
+
+    if (currentTable.percentageDifferences.length >= 1) {
+        const medianPercentage = calculateMedian(currentTable.percentageDifferences);
+        const tdText = `${medianPercentage > 0 ? "+" : ""}${medianPercentage.toFixed(3)}%`;
+        let tdColour = medianPercentage > 0 ? "#85FF78" : "#FF7878";
+        
+        tr2.appendChild(newTd(tdText, true, { 
+            backgroundColor: tdColour,
+            colSpan: 4
+        }));
+    }
+
+    displayQualyScore(currentTable);
+}
+
 
 // Create all qualifying tables
-function createQualifyingTable(results){
 
+function createQualifyingTable(results) {
     const div = document.getElementById("tables");
     div.innerHTML = "";
     
     let currentTable = undefined;
     let tableList = [];
-    let driverList = [];
 
     const races = results.MRData.RaceTable.Races;
-    for(let i = 0; i<races.length; i++){
+    for(let i = 0; i < races.length; i++) {
+        if (races[i].QualifyingResults.length !== 2) continue;
 
-        //Dont record when only one driver entry
-        if (races[i].QualifyingResults.length !== 2){
-            continue;
-        }
-
-        races[i].QualifyingResults.sort((a,b) =>{
-            return a.number - b.number;
-        });
+        races[i].QualifyingResults.sort((a,b) => a.number - b.number);
 
         let driver1Id = races[i].QualifyingResults[0].Driver.driverId;
         let driver2Id = races[i].QualifyingResults[1].Driver.driverId;
@@ -227,82 +281,77 @@ function createQualifyingTable(results){
         const driver1 = newDriver(driver1Id < driver2Id ? races[i].QualifyingResults[0] : races[i].QualifyingResults[1]);
         const driver2 = newDriver(driver1Id > driver2Id ? races[i].QualifyingResults[0] : races[i].QualifyingResults[1]);
 
-        // Create a table for each driver pairing
-        if(i === 0){
-            table = createTable(driver1, driver2);
-            currentTable = table;
-            tableList.push(table);
-        }else{
+        // Create or find existing table
+        if(i === 0) {
+            currentTable = createTable(driver1, driver2);
+            tableList.push(currentTable);
+        } else {
             const newTableId = `${driver1.id}${driver2.id}`;
-           // const reverseTableId = `${driver2.id}${driver1.id}`; // Sometimes the driver order switches
-
-            let found = false;
-            for(let i = 0; i<tableList.length; i++){
-                if (tableList[i].id == newTableId ){
-                    currentTable = tableList[i];
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){
-                table = createTable(driver1, driver2);
-                currentTable = table;
-                tableList.push(table);
+            currentTable = tableList.find(t => t.id === newTableId);
+            
+            if(!currentTable) {
+                currentTable = createTable(driver1, driver2);
+                tableList.push(currentTable);
             }
         }
         
         const tr = document.createElement("tr");
         currentTable.table.appendChild(tr);
 
-        tr.appendChild(newTd(`${races[i].round}: ${races[i].raceName}`, false, {textAlign: "left"}));
+        // Add round number
+        tr.appendChild(newTd(races[i].round, false, {textAlign: "center"}));
+        
+        // Add race name
+        tr.appendChild(newTd(races[i].raceName, false, {textAlign: "left"}));
 
-        const d1BestTime = bestTime(driver1);
-        tr.appendChild(newTd(`Q${d1BestTime.session} ${d1BestTime.time}`, false));
+        const d1Times = bestTime(driver1);
+        const d2Times = bestTime(driver2);
+        const comparison = compareDriverTimes(d1Times, d2Times);
 
-        const d2BestTime = bestTime(driver2);
-        tr.appendChild(newTd(`Q${d2BestTime.session} ${d2BestTime.time}`, false));
+        // Add session used
+        tr.appendChild(newTd(comparison.sessionUsed || "N/A", false, {textAlign: "center"}));
 
-        if (d1BestTime === "N/A" || d2BestTime === "N/A"){
+        // Add driver times
+        tr.appendChild(newTd(comparison.d1Time || "N/A", false));
+        tr.appendChild(newTd(comparison.d2Time || "N/A", false));
+
+        if (!comparison.sessionUsed || !comparison.d1Time || !comparison.d2Time) {
+            tr.appendChild(newTd("No comparable times", false));
+            tr.appendChild(newTd("N/A", false));
             continue;
         }
 
-        currentTable.raceCount++
-        //Only compare times if they where in the same final session.
-        let tdText = "Different sessions";
-        let tdColour = "#85FF78"
-        if(d1BestTime.session === d2BestTime.session){
-            let timeDifference = convertTimeString(d2BestTime.time) - convertTimeString(d1BestTime.time);
-            currentTable.cumulativeDifference += timeDifference;
-            currentTable.sameRaceCount++;
-            const time = millisecondsToStruct(timeDifference);
-            tdText = `${time.isNegative ? "-" : "+"}${time.minutes > 0 ? time.minutes+":" : ""}${time.seconds}.${time.milliseconds}`;
-            
-            if (time.isNegative) {
-                tdColour = "#FF7878";
-            }
-            else {
-                currentTable.driver1Better++;
-            }
-        }else{
-            
-            if(d1BestTime.session > d2BestTime.session){
-                currentTable.driver1Better++;     
-            }else{
-                tdColour = "#FF7878";
-            }
-        }  
+        currentTable.raceCount++;
         
+        const d1TimeMs = convertTimeString(comparison.d1Time);
+        const d2TimeMs = convertTimeString(comparison.d2Time);
+        const timeDifference = d2TimeMs - d1TimeMs;
+        const percentageDifference = (timeDifference / d1TimeMs) * 100;
+
+        currentTable.timeDifferences.push(timeDifference);
+        currentTable.percentageDifferences.push(percentageDifference);
+        currentTable.sameRaceCount++;
+
+        if (timeDifference < 0) {
+            currentTable.driver1Better++;
+        }
+
+        // Add time delta
+        const time = millisecondsToStruct(timeDifference);
+        const tdText = `${time.isNegative ? "-" : "+"}${time.minutes > 0 ? time.minutes+":" : ""}${time.seconds}.${time.milliseconds}`;
+        const tdColour = time.isNegative ? "#FF7878" : "#85FF78";
         tr.appendChild(newTd(tdText, false, { backgroundColor: tdColour }));
+
+        // Add percentage delta
+        const percentText = `${percentageDifference > 0 ? "+" : ""}${percentageDifference.toFixed(3)}%`;
+        tr.appendChild(newTd(percentText, false, { backgroundColor: tdColour }));
     }
 
-
-    for (let i = 0; i < tableList.length; i++) {
-        displayMeanTime(tableList[i]);
-        displayQualyScore(tableList[i]);
-    }
-    
+    // Display summary statistics for each table
+    tableList.forEach(table => {
+        displayMedianResults(table);
+    });
 }
-
 // Add constructors to dropdown list
 function fillConstructorsList(list, currentSelect){
     const select = document.getElementById("constructorList");

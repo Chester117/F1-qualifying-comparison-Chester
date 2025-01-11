@@ -65,18 +65,18 @@ function convertTimeString(time){
         return milliseconds
     }
 }
-
 function createTable(driver1, driver2) {
     const div = document.getElementById("tables");
     div.style.display = "flex";
-    div.style.flexDirection = "column"; // Force vertical stacking
-    div.style.alignItems = "center"; // Center tables
+    div.style.flexDirection = "column";
+    div.style.alignItems = "center";
     
-    // Add driver names header
+    // Add driver names header with same font as page title
     const driverHeader = document.createElement("h1");
     driverHeader.style.fontSize = "2em";
     driverHeader.style.marginBottom = "1em";
     driverHeader.style.textAlign = "center";
+    driverHeader.style.fontFamily = "'__Inter_e66fe9', '__Inter_Fallback_e66fe9'"; // Match page title font
     driverHeader.textContent = `${driver1.name} vs ${driver2.name}`;
     div.appendChild(driverHeader);
     
@@ -95,13 +95,13 @@ function createTable(driver1, driver2) {
     const tr = document.createElement("tr");
     table.appendChild(tr);
 
-    // Add headers with increased widths
+    // Add headers with increased widths for driver columns
     const headers = [
         { text: "Round", width: "50px" },
         { text: "Race", width: "200px" },
         { text: "Session", width: "60px" },
-        { text: driver1.name, width: "110px" },
-        { text: driver2.name, width: "110px" },
+        { text: driver1.name, width: "140px" }, // Increased from 110px
+        { text: driver2.name, width: "140px" }, // Increased from 110px
         { text: "Time Delta", width: "100px" },
         { text: "Delta %", width: "90px" }
     ];
@@ -113,7 +113,7 @@ function createTable(driver1, driver2) {
         let th = document.createElement("th");
         th.appendChild(document.createTextNode(header.text));
         th.className = `row-${index + 1}`;
-        th.style.padding = "6px"; // Increased padding
+        th.style.padding = "6px";
         th.style.textAlign = index === 1 ? "left" : "center";
         th.style.width = header.width;
         th.style.whiteSpace = "nowrap";
@@ -134,6 +134,7 @@ function createTable(driver1, driver2) {
     };
 }
 
+//end of creat table
 function newDriver(d) {
     return {
         name: `${d.Driver.givenName} ${d.Driver.familyName}`,
@@ -234,6 +235,14 @@ function calculateMedian(numbers) {
     return sorted[middle];
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////DISPLAY MEDIAN RESULTS////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function displayMedianResults(currentTable) {
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
@@ -299,7 +308,7 @@ function displayMedianResults(currentTable) {
         // First cell with label (Round column)
         const labelCell = document.createElement("td");
         labelCell.style.textAlign = "left";
-        labelCell.style.padding = "6px";
+        labelCell.style.padding = "12px 6px"; // Increased padding for consistent height
         labelCell.style.fontWeight = "bold";
         labelCell.style.width = "50px";
         if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
@@ -309,7 +318,7 @@ function displayMedianResults(currentTable) {
         // Race name column - contains the label
         const raceLabelCell = document.createElement("td");
         raceLabelCell.style.textAlign = "left";
-        raceLabelCell.style.padding = "6px";
+        raceLabelCell.style.padding = "12px 6px"; // Increased padding for consistent height
         raceLabelCell.style.fontWeight = "bold";
         raceLabelCell.style.width = "200px";
         if (index === 0) raceLabelCell.style.borderTop = "4px solid #ddd";
@@ -325,7 +334,7 @@ function displayMedianResults(currentTable) {
         // Value cell spanning remaining columns
         const result = data.getValue();
         const valueCell = document.createElement("td");
-        valueCell.style.padding = "6px";
+        valueCell.style.padding = "12px 6px"; // Increased padding for consistent height
         valueCell.style.textAlign = "center";
         valueCell.colSpan = 4;
         if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
@@ -352,7 +361,7 @@ function displayMedianResults(currentTable) {
     // Race column with label
     const labelCell = document.createElement("td");
     labelCell.style.textAlign = "left";
-    labelCell.style.padding = "6px";
+    labelCell.style.padding = "12px 6px"; // Increased padding for consistent height
     labelCell.style.fontWeight = "bold";
     labelCell.style.width = "200px";
     labelCell.textContent = "Qualifying score";
@@ -365,7 +374,7 @@ function displayMedianResults(currentTable) {
 
     // Score cell
     const scoreCell = document.createElement("td");
-    scoreCell.style.padding = "6px";
+    scoreCell.style.padding = "12px 6px"; // Increased padding for consistent height
     scoreCell.style.textAlign = "center";
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
@@ -375,11 +384,32 @@ function displayMedianResults(currentTable) {
     const headers = currentTable.table.getElementsByTagName('th');
     const driver1Name = headers[3].textContent;
     const driver2Name = headers[4].textContent;
-    const scoreText = `${driver1Name} ${currentTable.driver1Better} - ${currentTable.raceCount - currentTable.driver1Better} ${driver2Name}`;
+    
+    // Determine which driver has better score
+    const driver1Score = currentTable.driver1Better;
+    const driver2Score = currentTable.raceCount - currentTable.driver1Better;
+    
+    let scoreText;
+    if (driver1Score >= driver2Score) {
+        scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
+    } else {
+        scoreText = `${driver2Name} ${driver2Score} - ${driver1Score} ${driver1Name}`;
+    }
+    
     scoreCell.textContent = scoreText;
 
     qualyScoreTr.appendChild(scoreCell);
 }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////  END END END  ///////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////END OF DISPLAY MEDIAN RESULTS END OF//////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////  END END END  ///////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Create all qualifying tables
 

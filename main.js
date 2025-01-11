@@ -244,8 +244,6 @@ function calculateMedian(numbers) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 function displayMedianResults(currentTable) {
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
@@ -308,93 +306,39 @@ function displayMedianResults(currentTable) {
         const tr = document.createElement("tr");
         currentTable.table.appendChild(tr);
 
-        // First cell with label (Round column)
-        const labelCell = document.createElement("td");
-        labelCell.style.textAlign = "left";
-        labelCell.style.padding = "12px 6px"; // Increased padding for consistent height
-        labelCell.style.fontWeight = "bold";
-        labelCell.style.width = "50px";
-        if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
-        labelCell.textContent = "";
-        tr.appendChild(labelCell);
-
-        // Race name column - contains the label
-        const raceLabelCell = document.createElement("td");
-        raceLabelCell.style.textAlign = "left";
-        raceLabelCell.style.padding = "12px 6px"; // Increased padding for consistent height
-        raceLabelCell.style.fontWeight = "bold";
-        raceLabelCell.style.width = "200px";
-        if (index === 0) raceLabelCell.style.borderTop = "4px solid #ddd";
-        raceLabelCell.textContent = data.label;
-        tr.appendChild(raceLabelCell);
-
-        // Session column (empty)
-        const sessionCell = document.createElement("td");
-        if (index === 0) sessionCell.style.borderTop = "4px solid #ddd";
-        sessionCell.style.width = "60px";
-        tr.appendChild(sessionCell);
-
-        // Value cell spanning remaining columns
+        // Single cell containing both label and value
+        const cell = document.createElement("td");
+        cell.style.padding = "12px 6px";
+        cell.style.fontWeight = "bold";
+        cell.style.textAlign = "left";
+        cell.colSpan = 7; // Span all columns
+        if (index === 0) cell.style.borderTop = "4px solid #ddd";
+        
         const result = data.getValue();
-        const valueCell = document.createElement("td");
-        valueCell.style.padding = "12px 6px"; // Increased padding for consistent height
-        valueCell.style.textAlign = "center";
-        valueCell.colSpan = 4;
-        if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
-        
-        if (result) {
-            valueCell.style.fontWeight = "bold";
-            valueCell.textContent = result.text;
-        } else {
-            valueCell.textContent = "N/A";
-        }
-        
-        tr.appendChild(valueCell);
+        cell.textContent = `${data.label}: ${result ? result.text : 'N/A'}`;
+        tr.appendChild(cell);
     });
 
     // Add qualifying score
     const qualyScoreTr = document.createElement("tr");
     currentTable.table.appendChild(qualyScoreTr);
 
-    // Round column (empty)
-    const roundCell = document.createElement("td");
-    roundCell.style.width = "50px";
-    qualyScoreTr.appendChild(roundCell);
-
-    // Race column with label
-    const labelCell = document.createElement("td");
-    labelCell.style.textAlign = "left";
-    labelCell.style.padding = "12px 6px"; // Increased padding for consistent height
-    labelCell.style.fontWeight = "bold";
-    labelCell.style.width = "200px";
-    labelCell.textContent = "Qualifying score";
-    qualyScoreTr.appendChild(labelCell);
-
-    // Session column (empty)
-    const sessionCell = document.createElement("td");
-    sessionCell.style.width = "60px";
-    qualyScoreTr.appendChild(sessionCell);
-
-    // Score cell
+    // Single cell for qualifying score
     const scoreCell = document.createElement("td");
     scoreCell.style.padding = "12px 6px";
-    scoreCell.style.textAlign = "center";
-    scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
-    scoreCell.colSpan = 4;
+    scoreCell.style.textAlign = "left";
+    scoreCell.colSpan = 7; // Span all columns
 
     // Get driver names from the table headers
     const headers = currentTable.table.getElementsByTagName('th');
     const driver1Name = headers[3].textContent;
     const driver2Name = headers[4].textContent;
     
-    // Always keep driver1 on the left and driver2 on the right
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
     
-    const scoreText = `${driver2Name} ${driver1Score} - ${driver2Score} ${driver1Name}`;
-    scoreCell.textContent = scoreText;
-
+    scoreCell.textContent = `Qualifying score: ${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
     qualyScoreTr.appendChild(scoreCell);
 }
 
@@ -485,16 +429,17 @@ function createQualifyingTable(results) {
             const time = millisecondsToStruct(timeDifference);
             const tdColor = time.isNegative ? "#FF7878" : "#85FF78";
 
+            // Update the round cell color
+            cells[0].backgroundColor = tdColor;
+
             cells.push(
                 { 
                     text: `${time.isNegative ? "-" : "+"}${time.minutes > 0 ? time.minutes+":" : ""}${time.seconds}.${time.milliseconds.toString().padStart(3, '0')}`,
-                    align: "center",
-                    backgroundColor: tdColor
+                    align: "center"
                 },
                 { 
                     text: `${percentageDifference > 0 ? "+" : ""}${percentageDifference.toFixed(3)}%`,
-                    align: "center",
-                    backgroundColor: tdColor
+                    align: "center"
                 }
             );
         }
@@ -517,6 +462,7 @@ function createQualifyingTable(results) {
         displayMedianResults(table);
     });
 }
+
 // Add constructors to dropdown list
 function fillConstructorsList(list, currentSelect){
     const select = document.getElementById("constructorList");

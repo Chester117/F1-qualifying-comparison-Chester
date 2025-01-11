@@ -65,11 +65,20 @@ function convertTimeString(time){
         return milliseconds
     }
 }
+
 function createTable(driver1, driver2) {
     const div = document.getElementById("tables");
     div.style.display = "flex";
     div.style.flexDirection = "column"; // Force vertical stacking
-    div.style.alignItems = "flex-start"; // Align tables to the left
+    div.style.alignItems = "center"; // Center tables
+    
+    // Add driver names header
+    const driverHeader = document.createElement("h1");
+    driverHeader.style.fontSize = "2em";
+    driverHeader.style.marginBottom = "1em";
+    driverHeader.style.textAlign = "center";
+    driverHeader.textContent = `${driver1.name} vs ${driver2.name}`;
+    div.appendChild(driverHeader);
     
     // Create a container div for this specific table
     const tableContainer = document.createElement("div");
@@ -236,8 +245,7 @@ function displayMedianResults(currentTable) {
                     const avgTime = millisecondsToStruct(calculateAverage(currentTable.timeDifferences));
                     const ms = avgTime.milliseconds.toString().padStart(3, '0');
                     return {
-                        text: `${avgTime.isNegative ? "-" : "+"}${avgTime.minutes > 0 ? avgTime.minutes + ":" : ""}${avgTime.seconds}.${ms}`,
-                        color: avgTime.isNegative ? "#FF7878" : "#85FF78"
+                        text: `${avgTime.isNegative ? "-" : "+"}${avgTime.minutes > 0 ? avgTime.minutes + ":" : ""}${avgTime.seconds}.${ms}`
                     };
                 }
                 return null;
@@ -250,8 +258,7 @@ function displayMedianResults(currentTable) {
                     const medianTime = millisecondsToStruct(calculateMedian(currentTable.timeDifferences));
                     const ms = medianTime.milliseconds.toString().padStart(3, '0');
                     return {
-                        text: `${medianTime.isNegative ? "-" : "+"}${medianTime.minutes > 0 ? medianTime.minutes + ":" : ""}${medianTime.seconds}.${ms}`,
-                        color: medianTime.isNegative ? "#FF7878" : "#85FF78"
+                        text: `${medianTime.isNegative ? "-" : "+"}${medianTime.minutes > 0 ? medianTime.minutes + ":" : ""}${medianTime.seconds}.${ms}`
                     };
                 }
                 return null;
@@ -264,8 +271,7 @@ function displayMedianResults(currentTable) {
                     const avgPercentage = calculateAverage(currentTable.percentageDifferences);
                     const formattedPercentage = Number(Math.abs(avgPercentage)).toPrecision(3);
                     return {
-                        text: `${avgPercentage > 0 ? "+" : "-"}${formattedPercentage}%`,
-                        color: avgPercentage > 0 ? "#85FF78" : "#FF7878"
+                        text: `${avgPercentage > 0 ? "+" : "-"}${formattedPercentage}%`
                     };
                 }
                 return null;
@@ -278,8 +284,7 @@ function displayMedianResults(currentTable) {
                     const medianPercentage = calculateMedian(currentTable.percentageDifferences);
                     const formattedPercentage = Number(Math.abs(medianPercentage)).toPrecision(3);
                     return {
-                        text: `${medianPercentage > 0 ? "+" : "-"}${formattedPercentage}%`,
-                        color: medianPercentage > 0 ? "#85FF78" : "#FF7878"
+                        text: `${medianPercentage > 0 ? "+" : "-"}${formattedPercentage}%`
                     };
                 }
                 return null;
@@ -326,7 +331,6 @@ function displayMedianResults(currentTable) {
         if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
         
         if (result) {
-            valueCell.style.backgroundColor = result.color;
             valueCell.style.fontWeight = "bold";
             valueCell.textContent = result.text;
         } else {
@@ -367,10 +371,11 @@ function displayMedianResults(currentTable) {
     scoreCell.style.fontWeight = "bold";
     scoreCell.colSpan = 4;
 
-    const scoreText = `${currentTable.driver1Better} - ${currentTable.raceCount - currentTable.driver1Better}`;
-    const scoreBetter = currentTable.driver1Better > (currentTable.raceCount - currentTable.driver1Better);
-    const scoreEqual = currentTable.driver1Better === (currentTable.raceCount - currentTable.driver1Better);
-    scoreCell.style.backgroundColor = scoreBetter ? "#85FF78" : (scoreEqual ? "#ffc478" : "#FF7878");
+    // Get driver names from the table headers
+    const headers = currentTable.table.getElementsByTagName('th');
+    const driver1Name = headers[3].textContent;
+    const driver2Name = headers[4].textContent;
+    const scoreText = `${driver1Name} ${currentTable.driver1Better} - ${currentTable.raceCount - currentTable.driver1Better} ${driver2Name}`;
     scoreCell.textContent = scoreText;
 
     qualyScoreTr.appendChild(scoreCell);

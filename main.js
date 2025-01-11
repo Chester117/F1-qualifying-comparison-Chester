@@ -78,13 +78,13 @@ function createTable(driver1, driver2) {
 
     // Add headers with specific widths and styles
     const headers = [
-        { text: "Round", width: "5%" },
-        { text: "Race", width: "20%" },
-        { text: "Session", width: "6%" },
-        { text: driver1.name, width: "12%" },
-        { text: driver2.name, width: "12%" },
-        { text: "Time Delta", width: "12%" },
-        { text: "Delta %", width: "10%" }
+        { text: "Round", width: "3%" },
+        { text: "Race", width: "15%" },
+        { text: "Session", width: "4%" },
+        { text: driver1.name, width: "10%" },
+        { text: driver2.name, width: "10%" },
+        { text: "Time Delta", width: "8%" },
+        { text: "Delta %", width: "8%" }
     ];
 
     headers.forEach((header, index) => {

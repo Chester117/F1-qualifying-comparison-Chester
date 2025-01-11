@@ -74,12 +74,12 @@ function createTable(driver1, driver2) {
     div.style.width = "100%"; // Ensure the container takes full width
     div.style.margin = "0 auto"; // Center the container
     
-    // Add driver names header with same font as page title
+    // Add driver names header with Source Han Sans SC font
     const driverHeader = document.createElement("h1");
     driverHeader.style.fontSize = "2em";
     driverHeader.style.marginBottom = "1em";
     driverHeader.style.textAlign = "center";
-    driverHeader.style.fontFamily = "'__Inter_e66fe9', '__Inter_Fallback_e66fe9'";
+    driverHeader.style.fontFamily = "'Source Han Sans SC', sans-serif"; // Changed to Source Han Sans SC
     driverHeader.style.width = "100%"; // Ensure header takes full width
     driverHeader.textContent = `${driver1.name} vs ${driver2.name}`;
     div.appendChild(driverHeader);

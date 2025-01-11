@@ -450,7 +450,7 @@ function createQualifyingTable(results) {
             currentTable.percentageDifferences.push(percentageDifference);
             currentTable.sameRaceCount++;
 
-            if (timeDifference < 0) {
+            if (timeDifference > 0) {
                 currentTable.driver1Better++;
             }
 

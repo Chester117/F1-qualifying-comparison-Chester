@@ -70,28 +70,29 @@ function createTable(driver1, driver2) {
     const div = document.getElementById("tables");
     const table = document.createElement("table");
     table.style.borderCollapse = "collapse";
-    table.style.width = "100%";
-    table.style.marginBottom = "2em";
+    table.style.width = "fit-content";
+    table.style.marginBottom = "1em";
+    table.style.backgroundColor = "#f5f5f5";  // Light grey background
     
     const tr = document.createElement("tr");
     table.appendChild(tr);
 
     // Add headers with specific widths and styles
     const headers = [
-        { text: "Round", width: "3%" },
-        { text: "Race", width: "15%" },
-        { text: "Session", width: "4%" },
-        { text: driver1.name, width: "10%" },
-        { text: driver2.name, width: "10%" },
-        { text: "Time Delta", width: "8%" },
-        { text: "Delta %", width: "8%" }
+        { text: "Round", width: "40px" },
+        { text: "Race", width: "180px" },
+        { text: "Session", width: "50px" },
+        { text: driver1.name, width: "100px" },
+        { text: driver2.name, width: "100px" },
+        { text: "Time Delta", width: "90px" },
+        { text: "Delta %", width: "80px" }
     ];
 
     headers.forEach((header, index) => {
         let th = document.createElement("th");
         th.appendChild(document.createTextNode(header.text));
         th.className = `row-${index + 1}`;
-        th.style.padding = "8px";
+        th.style.padding = "4px";
         th.style.textAlign = index === 1 ? "left" : "center";
         th.style.width = header.width;
         tr.appendChild(th);
@@ -108,7 +109,6 @@ function createTable(driver1, driver2) {
         driver1Better: 0,
     };
 }
-
 
 function newDriver(d) {
     return {
@@ -209,46 +209,35 @@ function calculateMedian(numbers) {
 
     return sorted[middle];
 }
+
 function displayMedianResults(currentTable) {
     // Calculate averages
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
     const summaryData = [
         {
-            label: "Median time difference",
-            getValue: () => {
-                if (currentTable.timeDifferences.length >= 1) {
-                    const medianTime = millisecondsToStruct(calculateMedian(currentTable.timeDifferences));
-                    return {
-                        text: `${medianTime.isNegative ? "-" : "+"}${medianTime.minutes > 0 ? medianTime.minutes + ":" : ""}${medianTime.seconds}.${medianTime.milliseconds}`,
-                        color: medianTime.isNegative ? "#FF7878" : "#85FF78"
-                    };
-                }
-                return null;
-            }
-        },
-        {
-            label: "Median percentage difference",
-            getValue: () => {
-                if (currentTable.percentageDifferences.length >= 1) {
-                    const medianPercentage = calculateMedian(currentTable.percentageDifferences);
-                    const formattedPercentage = Number(Math.abs(medianPercentage)).toPrecision(3);
-                    return {
-                        text: `${medianPercentage > 0 ? "+" : "-"}${formattedPercentage}%`,
-                        color: medianPercentage > 0 ? "#85FF78" : "#FF7878"
-                    };
-                }
-                return null;
-            }
-        },
-        {
             label: "Average time difference",
             getValue: () => {
                 if (currentTable.timeDifferences.length >= 1) {
                     const avgTime = millisecondsToStruct(calculateAverage(currentTable.timeDifferences));
+                    const ms = avgTime.milliseconds.toString().padStart(3, '0');
                     return {
-                        text: `${avgTime.isNegative ? "-" : "+"}${avgTime.minutes > 0 ? avgTime.minutes + ":" : ""}${avgTime.seconds}.${avgTime.milliseconds}`,
+                        text: `${avgTime.isNegative ? "-" : "+"}${avgTime.minutes > 0 ? avgTime.minutes + ":" : ""}${avgTime.seconds}.${ms}`,
                         color: avgTime.isNegative ? "#FF7878" : "#85FF78"
+                    };
+                }
+                return null;
+            }
+        },
+        {
+            label: "Median time difference",
+            getValue: () => {
+                if (currentTable.timeDifferences.length >= 1) {
+                    const medianTime = millisecondsToStruct(calculateMedian(currentTable.timeDifferences));
+                    const ms = medianTime.milliseconds.toString().padStart(3, '0');
+                    return {
+                        text: `${medianTime.isNegative ? "-" : "+"}${medianTime.minutes > 0 ? medianTime.minutes + ":" : ""}${medianTime.seconds}.${ms}`,
+                        color: medianTime.isNegative ? "#FF7878" : "#85FF78"
                     };
                 }
                 return null;
@@ -267,6 +256,20 @@ function displayMedianResults(currentTable) {
                 }
                 return null;
             }
+        },
+        {
+            label: "Median percentage difference",
+            getValue: () => {
+                if (currentTable.percentageDifferences.length >= 1) {
+                    const medianPercentage = calculateMedian(currentTable.percentageDifferences);
+                    const formattedPercentage = Number(Math.abs(medianPercentage)).toPrecision(3);
+                    return {
+                        text: `${medianPercentage > 0 ? "+" : "-"}${formattedPercentage}%`,
+                        color: medianPercentage > 0 ? "#85FF78" : "#FF7878"
+                    };
+                }
+                return null;
+            }
         }
     ];
 
@@ -277,26 +280,26 @@ function displayMedianResults(currentTable) {
         // First cell with label
         const labelCell = document.createElement("td");
         labelCell.style.textAlign = "left";
-        labelCell.style.padding = "8px";
+        labelCell.style.padding = "4px";
         labelCell.style.fontWeight = "bold";
-        if (index === 0) labelCell.style.borderTop = "4px solid #586eff";
+        if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
         labelCell.textContent = data.label;
         tr.appendChild(labelCell);
 
         // Empty cells for Race and Session
         for (let i = 0; i < 2; i++) {
             const emptyCell = document.createElement("td");
-            if (index === 0) emptyCell.style.borderTop = "4px solid #586eff";
+            if (index === 0) emptyCell.style.borderTop = "4px solid #ddd";
             tr.appendChild(emptyCell);
         }
 
         // Value cell
         const result = data.getValue();
         const valueCell = document.createElement("td");
-        valueCell.style.padding = "8px";
+        valueCell.style.padding = "4px";
         valueCell.style.textAlign = "center";
         valueCell.colSpan = 4;
-        if (index === 0) valueCell.style.borderTop = "4px solid #586eff";
+        if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
         
         if (result) {
             valueCell.style.backgroundColor = result.color;
@@ -315,7 +318,7 @@ function displayMedianResults(currentTable) {
 
     const labelCell = document.createElement("td");
     labelCell.style.textAlign = "left";
-    labelCell.style.padding = "8px";
+    labelCell.style.padding = "4px";
     labelCell.style.fontWeight = "bold";
     labelCell.textContent = "Qualifying score";
     qualyScoreTr.appendChild(labelCell);
@@ -326,7 +329,7 @@ function displayMedianResults(currentTable) {
     }
 
     const scoreCell = document.createElement("td");
-    scoreCell.style.padding = "8px";
+    scoreCell.style.padding = "4px";
     scoreCell.style.textAlign = "center";
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
@@ -340,7 +343,6 @@ function displayMedianResults(currentTable) {
 
     qualyScoreTr.appendChild(scoreCell);
 }
-
 // Create all qualifying tables
 
 function createQualifyingTable(results) {

@@ -104,11 +104,11 @@ function createTable(driver1, driver2) {
     const headers = [
         { text: "Round", width: "50px" },
         { text: "Race", width: "200px" },
-        { text: "Session", width: "60px" },
         { text: driver1.name, width: "140px" },
         { text: driver2.name, width: "140px" },
         { text: "Time Delta", width: "100px" },
-        { text: "Delta %", width: "90px" }
+        { text: "Delta %", width: "90px" },
+        { text: "Session", width: "60px" }
     ];
 
     headers.forEach((header, index) => {
@@ -417,13 +417,19 @@ function createQualifyingTable(results) {
             { text: races[i].raceName, align: "left" }
         ];
 
-        // Add session and times comparison
+        // Add times first
         const d1Times = bestTime(driver1);
         const d2Times = bestTime(driver2);
         const comparison = compareDriverTimes(d1Times, d2Times);
 
+        // Define session colors
+        const sessionColors = {
+            'Q1': '#ffcdd2', // light red
+            'Q2': '#fff9c4', // light yellow
+            'Q3': '#e1bee7'  // light purple
+        };
+
         cells.push(
-            { text: comparison.sessionUsed || "N/A", align: "center" },
             { text: comparison.d1Time || "N/A", align: "center" },
             { text: comparison.d2Time || "N/A", align: "center" }
         );
@@ -431,6 +437,7 @@ function createQualifyingTable(results) {
         if (!comparison.sessionUsed || !comparison.d1Time || !comparison.d2Time) {
             cells.push(
                 { text: "No comparable times", align: "center" },
+                { text: "N/A", align: "center" },
                 { text: "N/A", align: "center" }
             );
         } else {
@@ -450,7 +457,7 @@ function createQualifyingTable(results) {
             }
 
             const time = millisecondsToStruct(timeDifference);
-            const tdColor = time.isNegative ? "#FFBEBE" : "#B7FFAF";
+            const tdColor = time.isNegative ? "#FF7878" : "#85FF78";
 
             // Update both round and race name cell colors
             cells[0].backgroundColor = tdColor;
@@ -464,6 +471,11 @@ function createQualifyingTable(results) {
                 { 
                     text: `${percentageDifference > 0 ? "+" : ""}${percentageDifference.toFixed(3)}%`,
                     align: "center"
+                },
+                { 
+                    text: comparison.sessionUsed || "N/A", 
+                    align: "center",
+                    backgroundColor: comparison.sessionUsed ? sessionColors[comparison.sessionUsed] : null 
                 }
             );
         }

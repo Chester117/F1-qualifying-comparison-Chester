@@ -243,6 +243,7 @@ function calculateMedian(numbers) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 function displayMedianResults(currentTable) {
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
@@ -274,7 +275,7 @@ function displayMedianResults(currentTable) {
             }
         },
         {
-            label: "Average percentage difference",
+            label: "Average % difference",
             getValue: () => {
                 if (currentTable.percentageDifferences.length >= 1) {
                     const avgPercentage = calculateAverage(currentTable.percentageDifferences);
@@ -287,7 +288,7 @@ function displayMedianResults(currentTable) {
             }
         },
         {
-            label: "Median percentage difference",
+            label: "Median % difference",
             getValue: () => {
                 if (currentTable.percentageDifferences.length >= 1) {
                     const medianPercentage = calculateMedian(currentTable.percentageDifferences);
@@ -374,7 +375,7 @@ function displayMedianResults(currentTable) {
 
     // Score cell
     const scoreCell = document.createElement("td");
-    scoreCell.style.padding = "12px 6px"; // Increased padding for consistent height
+    scoreCell.style.padding = "12px 6px";
     scoreCell.style.textAlign = "center";
     scoreCell.style.fontSize = "1.1em";
     scoreCell.style.fontWeight = "bold";
@@ -385,23 +386,15 @@ function displayMedianResults(currentTable) {
     const driver1Name = headers[3].textContent;
     const driver2Name = headers[4].textContent;
     
-    // Determine which driver has better score
+    // Always keep driver1 on the left and driver2 on the right
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
     
-    let scoreText;
-    if (driver1Score >= driver2Score) {
-        scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
-    } else {
-        scoreText = `${driver2Name} ${driver2Score} - ${driver1Score} ${driver1Name}`;
-    }
-    
+    const scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
     scoreCell.textContent = scoreText;
 
     qualyScoreTr.appendChild(scoreCell);
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////  END END END  ///////////////////////////////////////////

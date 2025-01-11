@@ -244,6 +244,7 @@ function calculateMedian(numbers) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function displayMedianResults(currentTable) {
     const calculateAverage = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
@@ -306,29 +307,49 @@ function displayMedianResults(currentTable) {
         const tr = document.createElement("tr");
         currentTable.table.appendChild(tr);
 
-        // Single cell containing both label and value
-        const cell = document.createElement("td");
-        cell.style.padding = "12px 6px";
-        cell.style.fontWeight = "bold";
-        cell.style.textAlign = "left";
-        cell.colSpan = 7; // Span all columns
-        if (index === 0) cell.style.borderTop = "4px solid #ddd";
+        // Label cell
+        const labelCell = document.createElement("td");
+        labelCell.style.padding = "12px 6px";
+        labelCell.style.fontWeight = "bold";
+        labelCell.style.textAlign = "left";
+        labelCell.colSpan = 3; // Span first three columns
+        if (index === 0) labelCell.style.borderTop = "4px solid #ddd";
+        labelCell.textContent = data.label;
+        tr.appendChild(labelCell);
+        
+        // Value cell
+        const valueCell = document.createElement("td");
+        valueCell.style.padding = "12px 6px";
+        valueCell.style.fontWeight = "bold";
+        valueCell.style.textAlign = "left";
+        valueCell.colSpan = 4; // Span remaining columns
+        if (index === 0) valueCell.style.borderTop = "4px solid #ddd";
         
         const result = data.getValue();
-        cell.textContent = `${data.label}: ${result ? result.text : 'N/A'}`;
-        tr.appendChild(cell);
+        valueCell.textContent = result ? result.text : 'N/A';
+        tr.appendChild(valueCell);
     });
 
     // Add qualifying score
     const qualyScoreTr = document.createElement("tr");
     currentTable.table.appendChild(qualyScoreTr);
 
-    // Single cell for qualifying score
+    // Label cell
+    const labelCell = document.createElement("td");
+    labelCell.style.padding = "12px 6px";
+    labelCell.style.fontWeight = "bold";
+    labelCell.style.textAlign = "left";
+    labelCell.colSpan = 3;
+    labelCell.textContent = "Qualifying score";
+    qualyScoreTr.appendChild(labelCell);
+
+    // Score cell
     const scoreCell = document.createElement("td");
     scoreCell.style.padding = "12px 6px";
-    scoreCell.style.fontWeight = "bold";
     scoreCell.style.textAlign = "left";
-    scoreCell.colSpan = 7; // Span all columns
+    scoreCell.style.fontSize = "1.1em";
+    scoreCell.style.fontWeight = "bold";
+    scoreCell.colSpan = 4;
 
     // Get driver names from the table headers
     const headers = currentTable.table.getElementsByTagName('th');
@@ -338,7 +359,9 @@ function displayMedianResults(currentTable) {
     const driver1Score = currentTable.driver1Better;
     const driver2Score = currentTable.raceCount - currentTable.driver1Better;
     
-    scoreCell.textContent = `Qualifying score: ${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
+    const scoreText = `${driver1Name} ${driver1Score} - ${driver2Score} ${driver2Name}`;
+    scoreCell.textContent = scoreText;
+
     qualyScoreTr.appendChild(scoreCell);
 }
 
@@ -427,10 +450,11 @@ function createQualifyingTable(results) {
             }
 
             const time = millisecondsToStruct(timeDifference);
-            const tdColor = time.isNegative ? "#FF7878" : "#85FF78";
+            const tdColor = time.isNegative ? "#FFBEBE" : "#B7FFAF";
 
-            // Update the round cell color
+            // Update both round and race name cell colors
             cells[0].backgroundColor = tdColor;
+            cells[1].backgroundColor = tdColor;
 
             cells.push(
                 { 
